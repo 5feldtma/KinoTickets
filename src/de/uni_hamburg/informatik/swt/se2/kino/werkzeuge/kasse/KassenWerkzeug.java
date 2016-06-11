@@ -7,6 +7,7 @@ import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Datum;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Kino;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Tagesplan;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Vorstellung;
+import de.uni_hamburg.informatik.swt.se2.kino.observer.Beobachter;
 import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.datumsauswaehler.DatumAuswaehlWerkzeug;
 import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.platzverkauf.PlatzVerkaufsWerkzeug;
 import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.vorstellungsauswaehler.VorstellungsAuswaehlWerkzeug;
@@ -19,7 +20,7 @@ import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.vorstellungsauswaehler.V
  * @author SE2-Team
  * @version SoSe 2016
  */
-public class KassenWerkzeug
+public class KassenWerkzeug implements Beobachter
 {
     // Das Material dieses Werkzeugs
     private Kino _kino;
@@ -54,6 +55,10 @@ public class KassenWerkzeug
         _ui = new KassenWerkzeugUI(_platzVerkaufsWerkzeug.getUIPanel(),
                 _datumAuswaehlWerkzeug.getUIPanel(),
                 _vorstellungAuswaehlWerkzeug.getUIPanel());
+        
+        //Beobachter registrieren
+        _datumAuswaehlWerkzeug.registriereBeobachter(this);
+        _vorstellungAuswaehlWerkzeug.registriereBeobachter(this);
 
         registriereUIAktionen();
         setzeTagesplanFuerAusgewaehltesDatum();
@@ -119,4 +124,10 @@ public class KassenWerkzeug
     {
         return _vorstellungAuswaehlWerkzeug.getAusgewaehlteVorstellung();
     }
+
+	@Override
+	public void reagiereAufAenderungen() {
+		setzeAusgewaehlteVorstellung();
+		
+	}
 }
