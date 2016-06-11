@@ -20,7 +20,7 @@ public abstract class Beobachtbar {
 	protected void informiereUeberAenderungen()
 	{
 		for (Beobachter beobachter : _alleBeobachter) {
-			beobachter.reagiereAufAenderungen();
+			beobachter.reagiereAufAenderungen(this);
 		}
 	}
 }
