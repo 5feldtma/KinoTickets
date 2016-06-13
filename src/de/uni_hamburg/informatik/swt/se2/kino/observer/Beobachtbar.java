@@ -21,7 +21,6 @@ public abstract class Beobachtbar {
 	{
 		for (Beobachter beobachter : _alleBeobachter) {
 			beobachter.reagiereAufAenderungen(this);
-			int a = 1;
 		}
 	}
 }
