@@ -2,13 +2,13 @@ package de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.kasse;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 
 import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Datum;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Kino;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Tagesplan;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Vorstellung;
-import de.uni_hamburg.informatik.swt.se2.kino.observer.Beobachtbar;
-import de.uni_hamburg.informatik.swt.se2.kino.observer.Beobachter;
 import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.datumsauswaehler.DatumAuswaehlWerkzeug;
 import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.platzverkauf.PlatzVerkaufsWerkzeug;
 import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.vorstellungsauswaehler.VorstellungsAuswaehlWerkzeug;
@@ -21,7 +21,7 @@ import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.vorstellungsauswaehler.V
  * @author SE2-Team
  * @version SoSe 2016
  */
-public class KassenWerkzeug implements Beobachter
+public class KassenWerkzeug implements Observer
 {
     // Das Material dieses Werkzeugs
     private Kino _kino;
@@ -56,10 +56,10 @@ public class KassenWerkzeug implements Beobachter
         _ui = new KassenWerkzeugUI(_platzVerkaufsWerkzeug.getUIPanel(),
                 _datumAuswaehlWerkzeug.getUIPanel(),
                 _vorstellungAuswaehlWerkzeug.getUIPanel());
-        
+
         //Beobachter registrieren
-        _datumAuswaehlWerkzeug.registriereBeobachter(this);
-        _vorstellungAuswaehlWerkzeug.registriereBeobachter(this);
+        _datumAuswaehlWerkzeug.addObserver(this);
+        _vorstellungAuswaehlWerkzeug.addObserver(this);
 
         registriereUIAktionen();
         setzeTagesplanFuerAusgewaehltesDatum();
@@ -73,14 +73,15 @@ public class KassenWerkzeug implements Beobachter
      */
     private void registriereUIAktionen()
     {
-        _ui.getBeendenButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+        _ui.getBeendenButton()
+            .addActionListener(new ActionListener()
             {
-                reagiereAufBeendenButton();
-            }
-        });
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    reagiereAufBeendenButton();
+                }
+            });
     }
 
     /**
@@ -126,18 +127,19 @@ public class KassenWerkzeug implements Beobachter
         return _vorstellungAuswaehlWerkzeug.getAusgewaehlteVorstellung();
     }
 
-	@Override
-	public void reagiereAufAenderungen(Beobachtbar beobachtbar) {
+    @Override
+	public void update(Observable beobachtbar, Object arg)
+    {
 
-		//Vorstellung ändert sich
-		if (beobachtbar instanceof VorstellungsAuswaehlWerkzeug)
-		{
-			setzeAusgewaehlteVorstellung();
-		}
-		//Datum ändert sich
-		else if (beobachtbar instanceof DatumAuswaehlWerkzeug)
-		{
-			setzeTagesplanFuerAusgewaehltesDatum();
-		}
-	}
+        //Vorstellung ändert sich
+        if (beobachtbar instanceof VorstellungsAuswaehlWerkzeug)
+        {
+            setzeAusgewaehlteVorstellung();
+        }
+        //Datum ändert sich
+        else if (beobachtbar instanceof DatumAuswaehlWerkzeug)
+        {
+            setzeTagesplanFuerAusgewaehltesDatum();
+        }
+    }
 }
